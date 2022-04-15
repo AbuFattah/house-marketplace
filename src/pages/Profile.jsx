@@ -13,14 +13,6 @@ const Profile = () => {
   const [changeDetails, setChangeDetails] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
 
-  useEffect(() => {
-    setFormData((prevState) => ({
-      ...prevState,
-      name: user?.displayName,
-      email: user?.email,
-    }));
-  }, [user]);
-
   const { name, email } = formData;
 
   const handleLogout = () => {
@@ -34,22 +26,22 @@ const Profile = () => {
       return;
     }
     try {
-      if (auth.currentUser.displayName !== name) {
-        await updateProfile(auth.currentUser, {
+      if (user.displayName !== name) {
+        await updateProfile(user, {
           displayName: name,
         });
 
-        const userRef = doc(db, "users", auth.currentUser.uid);
+        const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
           name,
         });
       }
-      if (auth.currentUser.email !== email) {
-        await updateEmail(auth.currentUser, email);
+      if (user.email !== email) {
+        await updateEmail(user, email);
 
-        const userRef = doc(db, "users", auth.currentUser.uid);
+        const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
-          name,
+          email,
         });
       }
     } catch {
@@ -65,8 +57,16 @@ const Profile = () => {
     }));
   };
 
-  // ! DO NOT Run this section of code
-  //! before useEffect at :line:16
+  useEffect(() => {
+    setFormData((prevState) => ({
+      ...prevState,
+      name: user?.displayName,
+      email: user?.email,
+    }));
+  }, [user]);
+
+  // ! DO NOT Run this loading code
+  //! before useEffect at :line:60
   //! it will cause [rendered more hooks than during the preveious render]
   if (loading) {
     return <p>Hello loader</p>;
