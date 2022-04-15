@@ -13,7 +13,7 @@ const useAuthStatus = () => {
         setUser(user);
         setLoading(false);
       } else {
-        setUser({});
+        setUser(null);
         setLoading(false);
       }
     });

@@ -9,44 +9,19 @@ import useAuthStatus from "../hooks/useAuthStatus";
 
 const Profile = () => {
   const { user, loading } = useAuthStatus();
-  // const [user, setUser] = useState(null);
-  // const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [changeDetails, setChangeDetails] = useState(false);
+  const [formData, setFormData] = useState({ name: "", email: "" });
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       console.log("inside authstate");
-  //       // console.log(user);
-  //       setUser(user);
-  //       setLoading(false);
-  //     } else {
-  //       setUser({});
-  //       setLoading(false);
-  //     }
-  //   });
+  useEffect(() => {
+    setFormData((prevState) => ({
+      ...prevState,
+      name: user?.displayName,
+      email: user?.email,
+    }));
+  }, [user]);
 
-  //   return unsubscribe;
-  // }, []);
-
-  if (loading) {
-    return <p>Hello loader</p>;
-  }
-  // if (loading) {
-  //   return <p>Loading....</p>;
-  // }
-  // const [formData, setFormData] = useState({
-  //   name: "",
-  //   email: "",
-  // });
-  let name;
-  let email;
-  if (user) {
-    name = user.displayName;
-    email = user.email;
-  }
-  // const { name, email } = formData;
+  const { name, email } = formData;
 
   const handleLogout = () => {
     signOut(auth);
@@ -90,6 +65,13 @@ const Profile = () => {
     }));
   };
 
+  // ! DO NOT Run this section of code
+  //! before useEffect at :line:16
+  //! it will cause [rendered more hooks than during the preveious render]
+  if (loading) {
+    return <p>Hello loader</p>;
+  }
+
   console.log(user);
   return (
     <div className="profile">
@@ -123,7 +105,7 @@ const Profile = () => {
               name="name"
               className={changeDetails ? "profileNameActive" : "profileName"}
               disabled={!changeDetails}
-              value={name}
+              defaultValue={user?.displayName}
               onChange={handleChange}
             />
             <input
@@ -131,7 +113,7 @@ const Profile = () => {
               name="email"
               className={changeDetails ? "profileEmailActive" : "profileEmail"}
               disabled={!changeDetails}
-              value={email}
+              defaultValue={user?.email}
               onChange={handleChange}
             />
           </form>

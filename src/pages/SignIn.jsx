@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../firebase.config";
 import { signInWithEmailAndPassword } from "firebase/auth";
 
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
 const SignIn = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,8 +31,9 @@ const SignIn = () => {
         email,
         password
       );
-      const user = userCredential.user;
-      navigate("/");
+      // const user = userCredential.user;
+      const path = location?.state?.from?.pathname || "/";
+      navigate(path, { replace: true });
     } catch (error) {
       toast.error("Bad credentials");
     }
