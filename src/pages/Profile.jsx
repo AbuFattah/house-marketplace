@@ -6,9 +6,11 @@ import { updateProfile } from "firebase/auth";
 import { doc, updateDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 import useAuthStatus from "../hooks/useAuthStatus";
+import Spinner from "../components/Spinner";
 
 const Profile = () => {
   const { user, loading } = useAuthStatus();
+  const [updating, setUpdating] = useState(false);
   const navigate = useNavigate();
   const [changeDetails, setChangeDetails] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "" });
@@ -26,27 +28,23 @@ const Profile = () => {
       return;
     }
     try {
-      if (user.displayName !== name) {
+      if (user.displayName !== name || user.email !== email) {
+        setUpdating(true);
         await updateProfile(user, {
           displayName: name,
         });
-
-        const userRef = doc(db, "users", user.uid);
-        await updateDoc(userRef, {
-          name,
-        });
-      }
-      if (user.email !== email) {
         await updateEmail(user, email);
 
         const userRef = doc(db, "users", user.uid);
         await updateDoc(userRef, {
+          name,
           email,
         });
       }
     } catch {
       toast.error("something went wrong");
     }
+    setUpdating(false);
     setChangeDetails((prevState) => !prevState);
   };
 
@@ -68,8 +66,8 @@ const Profile = () => {
   // ! DO NOT Run this loading code
   //! before useEffect at :line:60
   //! it will cause [rendered more hooks than during the preveious render]
-  if (loading) {
-    return <p>Hello loader</p>;
+  if (loading || updating) {
+    return <Spinner />;
   }
 
   console.log(user);

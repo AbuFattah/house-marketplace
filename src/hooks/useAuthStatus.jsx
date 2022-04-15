@@ -8,14 +8,12 @@ const useAuthStatus = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("inside authstate");
-        // console.log(user);
         setUser(user);
-        setLoading(false);
+        // setLoading(false);
       } else {
         setUser(null);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return unsubscribe;
