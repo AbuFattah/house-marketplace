@@ -71,6 +71,7 @@ const Profile = () => {
   }
 
   console.log(user);
+  const emailDisabled = !(user?.providerData[0]?.providerId === "password");
   return (
     <div className="profile">
       <header className="profileHeader">
@@ -110,7 +111,7 @@ const Profile = () => {
               type="email"
               name="email"
               className={changeDetails ? "profileEmailActive" : "profileEmail"}
-              disabled={!changeDetails}
+              disabled={emailDisabled}
               defaultValue={user?.email}
               onChange={handleChange}
             />

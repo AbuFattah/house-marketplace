@@ -3,10 +3,15 @@ import { toast } from "react-toastify";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase.config";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
+import OAuth from "../components/OAuth";
 const SignUp = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,7 +61,8 @@ const SignUp = () => {
         password
       );
       const user = userCredential.user;
-
+      await sendEmailVerification(user);
+      toast.success("Email verification sent");
       // console.log({ user, authUser: auth.currentUser });
       updateProfile(auth.currentUser, {
         displayName: name,
@@ -64,7 +70,7 @@ const SignUp = () => {
 
       const formDataCopy = { ...formData };
       delete formDataCopy.password;
-      formData.timestamp = serverTimestamp();
+      formDataCopy.timestamp = serverTimestamp();
 
       await setDoc(doc(db, "users", user.uid), formDataCopy);
       const path = location?.state?.from?.pathname || "/";
@@ -135,7 +141,7 @@ const SignUp = () => {
           </div>
         </form>
 
-        {/* Google OAuth */}
+        <OAuth />
 
         <Link to="/signin" className="registerLink">
           Sign In Instead
